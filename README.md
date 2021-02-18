@@ -1,5 +1,5 @@
 # iDaaS-KIC
-iDaas Knowledge, Insight and Knowledge Platform
+iDaas Knowledge, Insight and Confromance Platform
 
 # iDAAS-Data-DataHub
 iDAAS DataHub platform is intended for persisting of data needed within the iDAAS. The current main usage is
