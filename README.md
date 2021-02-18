@@ -1,9 +1,8 @@
 # iDaaS-KIC
 iDaas Knowledge, Insight and Confromance Platform
 
-# iDAAS-Data-DataHub
-iDAAS DataHub platform is intended for persisting of data needed within the iDAAS. The current main usage is
-for auditing and logging activities.
+# iDAAS-KIC-Integration
+iDAAS KIC Integration is the platform intended for persisting of errors, auditing and any relevant data activities that occur within iDaaS. The current main usage is for auditing and logging activities.
 
 This solution contains three supporting directories. The intent of these artifacts to enable
 resources to work locally: <br/>
@@ -13,9 +12,7 @@ and also building and packaging the solution as well. All the scripts are named 
 3. platform-datatier: DDL that support this implementation
 
 ## Supported RDBMS
-Here are links to the Community Edition RDBMS We are using:
-
-<a href="https://www.mariadb.com/" target="_blank">MySQL Community Edition</a>: v8 or better<br>
+The intent is to be able to leverage ANY RDBMS that organizations are comfortable with. For testing we tested it with the open source implementations of PostGres and MariaDB/MySQL Community (version 8 or greater).
 
 ## Scenario: Integration
 This repository follows a very common implementation. The implementation
