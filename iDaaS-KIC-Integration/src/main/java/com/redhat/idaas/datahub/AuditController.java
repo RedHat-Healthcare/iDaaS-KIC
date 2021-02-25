@@ -39,7 +39,6 @@ public class AuditController {
     @PostMapping("/message")
     public void newMessage(@RequestBody AuditMessage message) {
         Map<String, Object> kafkaHeaders = new HashMap<>();
-        kafkaHeaders.put("auditEntireMessage", message.getAuditEntireMessage());
         kafkaHeaders.put("auditdetails", message.getAuditdetails());
         kafkaHeaders.put("bodyData", message.getBodyData());
         kafkaHeaders.put("camelID", message.getCamelID());
@@ -53,6 +52,6 @@ public class AuditController {
         kafkaHeaders.put("processname", message.getProcessname());
         kafkaHeaders.put("processingtype", message.getProcessingtype());
 
-        producer.sendMessageWithHeaders(message.getAuditEntireMessage(), kafkaHeaders);
+        producer.sendMessageWithHeaders(message.getBodyData(), kafkaHeaders);
     }
 }

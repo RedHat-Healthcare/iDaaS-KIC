@@ -17,11 +17,10 @@ package com.redhat.idaas.datahub;
 
 public class AuditMessage {
 
-    public static final String[] DB_PERSISTABLE_FIELDS = new String[] {"auditEntireMessage", "messageprocesseddate",
+    public static final String[] DB_PERSISTABLE_FIELDS = new String[] { "messageprocesseddate",
             "messageprocessedtime", "processingtype", "industrystd", "component", "messagetrigger", "processname",
     "auditdetails", "camelID", "exchangeID", "internalMsgID", "bodyData"};
 
-    private String auditEntireMessage;
     private String messageprocesseddate;
     private String messageprocessedtime;
     private String processingtype;
@@ -34,12 +33,6 @@ public class AuditMessage {
     private String exchangeID;
     private String internalMsgID;
     private String bodyData;
-
-    public String getAuditEntireMessage() {
-        return auditEntireMessage;
-    }
-
-    public void setAuditEntireMessage(String auditEntireMessage) { this.auditEntireMessage = auditEntireMessage;}
 
     public String getMessageprocesseddate() {
         return messageprocesseddate;

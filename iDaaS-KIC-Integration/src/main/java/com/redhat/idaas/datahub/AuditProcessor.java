@@ -32,7 +32,6 @@ public class AuditProcessor implements Processor {
     @Override
     public void process(Exchange exchange) {
         AuditMessage message = new AuditMessage();
-        message.setAuditEntireMessage((String) exchange.getIn().getBody());
 
         Map<String, Object> headers = exchange.getIn().getHeaders();
 
