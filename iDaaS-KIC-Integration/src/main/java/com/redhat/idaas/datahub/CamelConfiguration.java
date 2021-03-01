@@ -26,6 +26,10 @@ import org.springframework.stereotype.Component;
 import org.apache.camel.component.kafka.KafkaComponent;
 import org.apache.camel.component.kafka.KafkaEndpoint;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringJoiner;
+
 @Component
 public class CamelConfiguration extends RouteBuilder {
 
@@ -55,11 +59,18 @@ public class CamelConfiguration extends RouteBuilder {
     if (config.isStoreInDb()) {
       route.multicast().parallelProcessing().to("direct:file", "direct:db");
 
-      String columns = String.join(",", AuditMessage.DB_PERSISTABLE_FIELDS);
-      String values = "'${body." + String.join("}', '${body.", AuditMessage.DB_PERSISTABLE_FIELDS) + "}'";
+      RouteDefinition from = from("direct:db");
 
-      from("direct:db").setBody(simple("INSERT INTO " + config.getDbTableName() + " (" + columns + ") VALUES (" + values + ")"))
-              .to("jdbc:dataSource");
+      String columns = String.join(",", AuditMessage.DB_PERSISTABLE_FIELDS);
+      List<String> namedParams = new ArrayList<>();
+      for (String namedParam: AuditMessage.DB_PERSISTABLE_FIELDS) {
+        namedParams.add(":?" + namedParam);
+        from = from.setHeader(namedParam, simple("${body." + namedParam + "}"));
+      }
+      String params = String.join(",", namedParams);
+
+      from.setBody(simple("INSERT INTO " + config.getDbTableName() + " (" + columns + ") VALUES (" + params + ")"))
+              .to("jdbc:dataSource?useHeadersAsParameters=true");
     } else {
       route.to("direct:file");
     }
