@@ -7,7 +7,7 @@
   <artifactId>idaas-data-hub</artifactId>
   <version>2020-09</version>
   
-  <name>iDAAS Data Hub</name>
+  <name>iDAAS KIC</name>
   
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
