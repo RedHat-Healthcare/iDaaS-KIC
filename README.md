@@ -1,7 +1,7 @@
 # iDaaS-KIC
 iDaas Knowledge, Insight and Confromance Platform. This repository is designed to contain all the assets needed to support implementing the entire design pattern. 
 
-# iDaaS-KIC_DataTiers
+# iDaaS-KIC-DataTiers
 Within this module within this repository you will find all the needed datatier DDLs to implement and any other customized data tier centric needs.
 
 ## Supported RDBMS
