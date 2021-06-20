@@ -1,18 +1,30 @@
 # iDaaS-KIC
-iDaas Knowledge, Insight and Confromance Platform
+iDaas Knowledge, Insight and Confromance Platform. This repository is designed to contain all the assets needed to support implementing the entire design pattern. 
 
-# iDAAS-KIC-Integration
-iDAAS KIC Integration is the platform intended for persisting of errors, auditing and any relevant data activities that occur within iDaaS. The current main usage is for auditing and logging activities.
-
-This solution contains three supporting directories. The intent of these artifacts to enable
-resources to work locally: <br/>
-1. platform-addons: needed software to run locally. This currently contains amq-streams-1.5 (which is the upstream of Kafka 2.5)<br/>
-2. platform-scripts: support running kafka, creating/listing and deleting topics needed for this solution
-and also building and packaging the solution as well. All the scripts are named to describe their capabilities <br/>
-3. platform-datatier: DDL that support this implementation
+# iDaaS-KIC_DataTiers
+Within this module within this repository you will find all the needed datatier DDLs to implement and any other customized data tier centric needs.
 
 ## Supported RDBMS
-The intent is to be able to leverage ANY RDBMS that organizations are comfortable with. For testing we tested it with the open source implementations of PostGres and MariaDB/MySQL Community (version 8 or greater).
+The intent is to be able to leverage ANY RDBMS that organizations are comfortable with. For testing we tested it with the open source implementations of PostGres and MariaDB/MySQL Community (version 8 or greater). MySQL 8 has been prodimently used and implemented.
+
+# iDaaS-KIC-Integration
+Within this module is the design pattern that persists errors, auditing and any relevant data activities that occur within iDaaS. The current main usage is for auditing and logging activities.
+
+## Pre-Requisites
+For all iDaaS design patterns it should be assumed that you will either install as part of this effort, or have the following:
+
+1. An existing Kafka (or some flavor of it) up and running. Red Hat currently implements AMQ-Streams based on Apache Kafka; however, we
+have implemented iDaaS with numerous Kafka implementations. Please see the following files we have included to try and help: <br/>
+[Kafka](https://github.com/RedHat-Healthcare/iDaaS-Demos/blob/master/Kafka.md)<br/>
+[KafkaWindows](https://github.com/RedHat-Healthcare/iDaaS-Demos/blob/master/KafkaWindows.md)<br/>
+No matter the platform chosen it is important to know that the Kafka out of the box implementation might require some changes depending
+upon your implementation needs. Here are a few we have made to ensure: <br/>
+In <kafka>/config/consumer.properties file we will be enhancing the property of auto.offset.reset to earliest. This is intended to enable any new 
+system entering the group to read ALL the messages from the start. <br/>
+auto.offset.reset=earliest <br/>
+2. Some understanding of building, deploying Java artifacts and the commands associated. If using Maven commands then Maven would need to be intalled and runing for the environment you are using. More details about Maven can be found [here](https://maven.apache.org/install.html)<br/>
+3. An internet connection with active internet connectivity, this is to ensure that if any Maven commands are
+run and any libraries need to be pulled down they can.<br/>
 
 ## Scenario: Integration
 This repository follows a very common implementation. The implementation
@@ -21,20 +33,48 @@ is processing all the data from the topic named opmgmt_transactions.
 ### Integration Data Flow Steps
 
 1. The Topic opmgmt_transactions is subscribed to for transactions.<br/>
-2. The data will be processed from the queue and the header attributes will all be parsed.<br/>
+2. The data will be processed from the topic and the header attributes will all be parsed.<br/>
 3. The header attributes should then be persisted to the appropriate database fields in appauditing_auditlog and
    appauditing_auditlog_msgs depending upon data attributes.<br/>
 
-## Builds
-This section will cover both local and automated builds.
+# Start The Engine!!!
+This section covers the running of the solution. There are several options to start the Engine Up!!!
 
-### Local Builds
-Within the code base you can find the local build commands in the platform-scripts directory
-1.  Run the build-solution.sh script
-It will run the maven commands to build and then package up the solution. The package will use the usual settings
-in the pom.xml file. It outputs target/idaas-datahub.jar
+## Step 1: Kafka Server To Connect To
+In order for ANY processing to occur you must have a Kafka server running that this accelerator is configured to connect to.
+Please see the following files we have included to try and help: <br/>
+[Kafka](https://github.com/RedHat-Healthcare/iDaaS-Demos/blob/master/Kafka.md)<br/>
+[KafkaWindows](https://github.com/RedHat-Healthcare/iDaaS-Demos/blob/master/KafkaWindows.md)<br/>
 
-### Running
+## Step 2: Running the App: Maven Commands or Code Editor
+This section covers how to get the application started.
++ Maven: go to the directory of where you have this code. Specifically, you want to be at the same level as the POM.xml file and execute the
+following command: <br/>
+```
+mvn clean install
+ ```
+You can run the individual efforts with a specific command, it is always recommended you run the mvn clean install first.
+Here is the command to run the design pattern from the command line: <br/>
+```
+mvn spring-boot:run
+ ```
+Depending upon if you have every run this code before and what libraries you have already in your local Maven instance it could take a few minutes.
++ Code Editor: You can right click on the Application.java in the /src/<application namespace> and select Run
+
+# Running the Java JAR
+If you don't run the code from an editor or from the maven commands above. You can compile the code through the maven
+commands above to build a jar file. Then, go to the /target directory and run the following command: <br/>
+```
+java -jar <jarfile>.jar 
+ ```
+
+### Design Pattern/Accelerator Configuration
+All iDaaS Design Pattern/Accelelrators have application.properties files to enable some level of reusability of code and simplfying configurational enhancements.<br/>
+In order to run multiple iDaaS integration applications we had to ensure the internal http ports that
+the application uses. In order to do this we MUST set the server.port property otherwise it defaults to port 8080 and ANY additional
+components will fail to start. iDaaS Connect HL7 uses 9980. You can change this, but you will have to ensure other applications are not
+using the port you specify.	
+
 Once built you can run the solution by executing `./platform-scripts/start-solution.sh`.
 The script will startup Kafka and iDAAS DataHub Service.
 
@@ -65,7 +105,7 @@ It is possible to overwrite configuration by:
 
 Supported properties include:
 ```properties
-server.port=8080
+server.port=9070
 
 idaas.kafkaBrokers=localhost:9092 #a comma separated list of kafka brokers e.g. host1:port1,host2:port2
 idaas.kafkaTopicName=opsmgmt_platformtransactions
@@ -80,8 +120,6 @@ ioaas.dbTableName=audit
 idaas.createDbTable=true
 ```
 
-
-
 ### Usage
 
 The service listens for Kafka messages on the `opsmgmt_platformtransactions` queue by default and outputs them to
@@ -94,7 +132,7 @@ it can be customized by providing `--server.port=8082` parameter.
 
 You can POST a message like this:
 ```shell script
-curl --location --request POST 'http://localhost:8080/message' \
+curl --location --request POST 'http://localhost:9070/message' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "auditEntireMessage": "test",
@@ -104,22 +142,26 @@ curl --location --request POST 'http://localhost:8080/message' \
 }'
 ```
 
+# Admin Interface - Management and Insight of Components
+Within each specific repository there is an administrative user interface that allows for monitoring and insight into the
+connectivity of any endpoint. Additionally, there is also the implementation to enable implementations to build there own
+by exposing the metadata. The data is exposed and can be used in numerous very common tools like Data Dog, Prometheus and so forth.
+This capability to enable would require a few additional properties to be set.
 
-### Automated Builds
-Automated Builds are going to be done in Azure Pipelines
+Below is a generic visual of how this looks (the visual below is specific to iDaaS Connect HL7): <br/>
+![iDaaS Platform - Visuals - iDaaS Data Flow - Detailed.png](https://github.com/RedHat-Healthcare/iDAAS/blob/master/images/iDAAS-Platform/iDaaS-Mgmt-UI.png)
 
-## Ongoing Enhancements
-We maintain all enhancements within the Git Hub portal under the
-<a href="https://github.com/RedHat-Healthcare/iDAAS-DataHub/projects" target="_blank">projects tab</a>
+Every asset has its own defined specific port, we have done this to ensure multiple solutions can be run simultaneously.
 
-## Defects/Bugs
-All defects or bugs should be submitted through the Git Hub Portal under the
-<a href="https://github.com/RedHat-Healthcare/iDAAS-DataHub/issues" target="_blank">issues tab</a>
+## Administrative Interface(s) Specifics
+For all the URL links we have made them localhost based, simply change them to the server the solution is running on.
 
-## Chat and Collaboration
-You can always leverage <a href="https://redhathealthcare.zulipchat.com" target="_blank">Red Hat Healthcare's ZuilpChat area</a>
-and find all the specific areas for iDAAS-DataHub. We look forward to any feedback!!
+|<b> iDaaS Connect Asset | Port | Admin URL / JMX URL |
+| :---        | :----   | :--- | 
+|iDaaS KIC | 9970| http://localhost:9970/actuator/hawtio/index.html / http://localhost:9970/actuator/jolokia/read/org.apache.camel:context=*,type=routes,name=* | 
 
-If you would like to contribute feel free to, contributions are always welcome!!!!
+If you would like to contribute feel free to, contributions are always welcome!!!! 
 
 Happy using and coding....
+
+
