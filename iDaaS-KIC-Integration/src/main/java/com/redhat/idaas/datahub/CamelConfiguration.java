@@ -75,6 +75,7 @@ public class CamelConfiguration extends RouteBuilder {
       route.to("direct:file");
     }
 
+    // File Unmarshal and Output
     from("direct:file").marshal().json(JsonLibrary.Jackson)
             .to("file:" + config.getAuditDir());
   }
